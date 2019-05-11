@@ -48,10 +48,10 @@
 - `Selfbot ini di gunakan khusus protect room no war`
 
 ## Special Suport Thanks to
-▪`Team bot protect`
-▪`Junsan junior`
-▪`Bebek bot team`
-▪`Thailand team bots`
+▪`Team Bot Protect [sk]`
+▪`Junsan Junior`
+▪`Bebek Bot Team`
+▪`Thailand Cassnova Team bots`
 ## my id line
 [@dhenza](https://line.me/ti/p/~teambotprotect)
 
