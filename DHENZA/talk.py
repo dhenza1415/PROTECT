@@ -1,12 +1,9 @@
 # -*- coding: utf-8 -*-
-from akad.ttypes import Message
+from akad.ttypes import Message, Location
 from random import randint
-
-import json, ntpath
-
-def loadjson(url):
-    raw = requests.get(url)
-    return json.loads(raw.text)
+from youtube_dl import YoutubeDL
+import youtube_dl
+import json, ntpath, requests
 
 def loggedIn(func):
     def checkLogin(*args, **kwargs):
@@ -174,6 +171,19 @@ class Talk(object):
         return self.talk.sendMessage(self._messageReq[to], msg)
 
     @loggedIn
+    def sendTemplate(to, data):
+        kiki = LiffChatContext(to)
+        ratedit = LiffContext(chat=kiki)
+        view = LiffViewRequest('1602687308-GXq4Vvk9', ratedit)
+        token = line.liff.issueLiffView(view)
+        url = 'https://api.line.me/message/v3/share'
+        headers = {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer %s' % token.accessToken
+        }
+        data = {"messages":[data]}
+        requests.post(url, headers=headers, data=json.dumps(data))
+    @loggedIn
     def generateMessageFooter(self, title=None, link=None, iconlink=None):
         self.profile = self.getProfile()
         self.userTicket = self.generateUserTicket()
@@ -182,6 +192,13 @@ class Talk(object):
         iconlink = iconlink if iconlink else 'https://obs.line-apps.com/os/p/%s' % self.profile.mid
         return {'AGENT_NAME': title, 'AGENT_LINK': link, 'AGENT_ICON': iconlink}
 
+    def adityasplittext(self,text,lp=''):
+        separate = text.split(" ")
+        if lp == '':adalah = text.replace(separate[0]+" ","")
+        elif lp == 's':adalah = text.replace(separate[0]+" "+separate[1]+" ","")
+        else:adalah = text.replace(separate[0]+" "+separate[1]+" "+separate[2]+" ","")
+        return adalah
+        
     @loggedIn
     def sendMessageWithFooter(self, to, text, title=None, link=None, iconlink=None, contentMetadata={}):
         msg = Message()
@@ -300,6 +317,12 @@ class Talk(object):
             i=i+1
         contentMetadata={'MENTION':str('{"MENTIONEES":' + json.dumps(arr).replace(' ','') + '}')}
         return self.sendMessage(to, text, contentMetadata)
+    @loggedIn
+    def adityarequestweb(self,url):
+        r = requests.get("{}".format(url))
+        data = r.text
+        data = json.loads(data)
+        return data
 
     @loggedIn
     def sendSticker(self, to, packageId, stickerId):
@@ -511,18 +534,35 @@ class Talk(object):
         return self.talk.reissueUserTicket(expirationTime, maxUseCount)
     
     @loggedIn
-    def cloneProfile(self, mid):
+    def cloneContactProfile(self, mid, channel):
         contact = self.getContact(mid)
-        profile = self.getProfile()
-        profile.displayName, profile.statusMessage = contact.displayName, contact.statusMessage
-        self.updateProfile(profile)
-        if contact.pictureStatus:
-            pict = self.downloadFileURL('http://dl.profile.line-cdn.net/' + contact.pictureStatus)
-            self.updateProfilePicture(pict)
-        coverId = self.getProfileDetail(mid)['result']['objectId']
-        self.updateProfileCoverById(coverId)
+        path = "http://dl.profile.line-cdn.net/" + contact.pictureStatus
+        path = self.downloadFileURL(path)
+        self.updateProfilePicture(path)
+        profile = self.profile
+        profile.displayName = contact.displayName
+        profile.statusMessage = contact.statusMessage
+        if channel.getProfileCoverId(mid) is not None:
+            channel.updateProfileCoverById(channel.getProfileCoverId(mid))
+        return self.updateProfile(profile)
 
+    @loggedIn
+    def cloneContactProfilev2(self, mid):
+        contact = self.getContact(mid)
+        profile = self.profile
+        profile.displayName = contact.displayName
+        profile.statusMessage = contact.statusMessage
+        profile.pictureStatus = self.downloadFileURL('http://dl.profile.line-cdn.net/' + contact.pictureStatus, 'path')
+        if self.getProfileCoverId(mid) is not None:
+            self.updateProfileCoverById(self.getProfileCoverId(mid))
+        self.updateProfilePicture(profile.pictureStatus)
+        return self.updateProfile(profile)
     """Group"""
+
+    @loggedIn
+    def getRecentMessagesV2(self, chatId, count=1001):
+        return self.talk.getRecentMessagesV2(chatId,count)
+
 
     @loggedIn
     def getChatRoomAnnouncementsBulk(self, chatRoomMids):

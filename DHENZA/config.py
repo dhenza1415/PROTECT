@@ -18,24 +18,26 @@ class Config(object):
     LINE_CHAN_QUERY_PATH        = '/CH4'
     LINE_SQUARE_QUERY_PATH      = '/SQS1'
     LINE_SHOP_QUERY_PATH        = '/SHOP4'
-
+    LINE_LIFF_PATH              = '/LIFF1'
     CHANNEL_ID = {
         'LINE_TIMELINE': '1341209850',
         'LINE_WEBTOON': '1401600689',
         'LINE_TODAY': '1518712866',
         'LINE_STORE': '1376922440',
         'LINE_MUSIC': '1381425814',
-        'LINE_SERVICES': '1459630796'
+        'LINE_SERVICES': '1459630796',  
     }
-
-    APP_TYPE    = ApplicationType._VALUES_TO_NAMES[368]
-    APP_VER     = '2.1.5'
+    APP_TYPE    = ApplicationType._VALUES_TO_NAMES[384]
+    APP_VER     = '2.15.0'
     CARRIER     = '51089, 1-0'
-    SYSTEM_NAME = 'SILENTKILLER'
-    SYSTEM_VER  = '11.2.5'
+    SYSTEM_NAME = 'Android OS'
+    SYSTEM_VER  = '5.1.1'
     IP_ADDR     = '8.8.8.8'
     EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
-
-    def __init__(self):
-        self.APP_NAME = '%s\t%s\t%s\t%s' % (self.APP_TYPE, self.APP_VER, self.SYSTEM_NAME, self.SYSTEM_VER)
-        self.USER_AGENT = 'Line/%s' % self.APP_VER
+    
+    def __init__(self, appType=None):
+        self.APP_NAME =  "ANDROIDLITE	2.15.0	Android OS	5.1.1"
+        self.USER_AGENT = "LLA/2.15.0 A37f 5.1.1"
+       
+       
+    

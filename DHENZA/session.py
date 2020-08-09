@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from thrift.transport import THttpClient
 from thrift.protocol import TCompactProtocol
-from akad import AuthService, TalkService, ChannelService, CallService, SquareService
+from akad import AuthService, TalkService, ChannelService, CallService, SquareService, ShopService, LiffService
 
 class Session:
 
@@ -20,7 +20,17 @@ class Session:
             self.transport.open()
 
         return self._auth
+    def Liff(self, isopen=True):
+        self.transport = THttpClient.THttpClient(self.host)
+        self.transport.setCustomHeaders(self.headers)
+        
+        self.protocol = TCompactProtocol.TCompactProtocol(self.transport)
+        self._liff  = LiffService.Client(self.protocol)
+        
+        if isopen:
+            self.transport.open()
 
+        return self._liff
     def Talk(self, isopen=True):
         self.transport = THttpClient.THttpClient(self.host)
         self.transport.setCustomHeaders(self.headers)
@@ -68,3 +78,15 @@ class Session:
             self.transport.open()
 
         return self._square
+
+    def Shop(self, isopen=True):
+        self.transport = THttpClient.THttpClient(self.host)
+        self.transport.setCustomHeaders(self.headers)
+
+        self.protocol = TCompactProtocol.TCompactProtocol(self.transport)
+        self._shop  = ShopService.Client(self.protocol)
+        
+        if isopen:
+            self.transport.open()
+
+        return self._shop
